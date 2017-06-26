@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">ExpertPDV</string>
+    <string name="select_photos">Selecionar Fotos</string>
+    <string name="select_photos_options_fragment">Selecionar via:</string>
+
+    <string name="error_camera_not_found">Erro: Câmera não encontrada</string>
+</resources>

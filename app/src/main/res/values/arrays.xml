@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="select_photos_options">
+        <item>Galeria de Fotos</item>
+        <item>Câmera</item>
+    </string-array>
+</resources>
