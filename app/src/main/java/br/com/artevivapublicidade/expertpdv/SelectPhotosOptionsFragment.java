@@ -45,7 +45,7 @@ public class SelectPhotosOptionsFragment extends DialogFragment {
     }
 
     private void accessPhotoGallery() {
-        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        Intent intent = new Intent(getActivity(), ImageGalleryActivity.class);
         startActivityForResult(intent, IMAGE_GALLERY);
     }
 
