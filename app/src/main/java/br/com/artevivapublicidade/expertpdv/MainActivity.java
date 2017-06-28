@@ -14,8 +14,6 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
     private LinearLayout lnrImages;
-    private Button btnAddPhotos;
-    private Button btnSendPhotos;
     private ArrayList<String> imagesPathList;
     private Bitmap imageBitmap;
     private Bitmap resized;
@@ -26,10 +24,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         lnrImages = (LinearLayout) findViewById(R.id.lnrImages);
-        btnAddPhotos = (Button) findViewById(R.id.btnSelectPhotos);
-        btnSendPhotos = (Button) findViewById(R.id.btnSendPhotos);
-        btnAddPhotos.setOnClickListener(this);
-        btnSendPhotos.setOnClickListener(this);
     }
 
     @Override

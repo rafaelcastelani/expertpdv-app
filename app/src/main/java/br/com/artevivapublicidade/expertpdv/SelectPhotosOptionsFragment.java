@@ -29,8 +29,8 @@ public class SelectPhotosOptionsFragment extends DialogFragment {
         builder.setItems(options, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                Toast.makeText(getActivity(), "Acessando " + options[i] + "...",
-                        Toast.LENGTH_SHORT).show();
+               /* Toast.makeText(getActivity(), "Acessando " + options[i] + "...",
+                        Toast.LENGTH_SHORT).show();*/
                 switch(i) {
                     case 0:
                         accessPhotoGallery();
