@@ -7,6 +7,8 @@
     <uses-feature android:name="android.hardware.camera" />
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
 
     <application
         android:allowBackup="true"
@@ -24,7 +26,8 @@
         </activity>
         <activity
             android:name=".ImageGalleryActivity"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:label="Galeria de Imagens"
+            android:theme="@style/AppTheme"></activity>
     </application>
 
 </manifest>
