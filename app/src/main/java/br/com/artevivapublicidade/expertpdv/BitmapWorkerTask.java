@@ -1,10 +1,14 @@
 package br.com.artevivapublicidade.expertpdv;
 
 import android.content.ContentResolver;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.widget.ImageView;
 
 import java.io.File;
@@ -16,9 +20,11 @@ import java.lang.ref.WeakReference;
 
 public class BitmapWorkerTask extends AsyncTask<Integer, Void, Bitmap> {
     WeakReference<ImageView> imageViewReferences;
+    private Resources mImageResources;
     private ContentResolver mContentResolver;
     private BitmapFactory.Options mOptions;
     private int mPosition;
+    private Drawable mImageDrawable;
 
     public BitmapWorkerTask(ImageView imageView, int imageW, int imageH, ContentResolver contentResolver) {
         imageViewReferences = new WeakReference<ImageView>(imageView);
@@ -27,11 +33,14 @@ public class BitmapWorkerTask extends AsyncTask<Integer, Void, Bitmap> {
         mOptions.outWidth = imageW;
         mOptions.outHeight = imageH;
         mPosition = imageView.getId();
+        mImageResources = imageView.getResources();
     }
 
     @Override
     protected Bitmap doInBackground(Integer... params) {
-        return  MediaStore.Images.Thumbnails.getThumbnail(mContentResolver, params[0], MediaStore.Images.Thumbnails.MINI_KIND, mOptions);
+        Bitmap imageBitmap = MediaStore.Images.Thumbnails.getThumbnail(mContentResolver, params[0], MediaStore.Images.Thumbnails.MINI_KIND, mOptions);
+        mImageDrawable = new BitmapDrawable(mImageResources, imageBitmap);
+        return imageBitmap;
     }
 
     @Override
@@ -52,7 +61,7 @@ public class BitmapWorkerTask extends AsyncTask<Integer, Void, Bitmap> {
         }
     }
 
-    public int getImageFile() {
-        return mPosition;
+    public Drawable getImageDrawable() {
+        return mImageDrawable;
     }
 }

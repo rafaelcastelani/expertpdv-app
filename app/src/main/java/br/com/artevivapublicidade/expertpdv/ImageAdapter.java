@@ -10,6 +10,8 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.util.LruCache;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -57,7 +59,6 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
                 int imageColumnIndex = imageCursor.getColumnIndex(MediaStore.Images.Media._ID);
                 //Adiciona o id atual no array ids
                 ids[i] = imageCursor.getInt(imageColumnIndex);
-                dataImages[i] = MediaStore.Images.Media.DATA;
 
             }
             imageCursor.close();
@@ -83,6 +84,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
     @Override
     //Associa as imagens de uma determinada pasta em uma View quando esta fica visível na tela
     public void onBindViewHolder(ViewHolder holder, int position) {
+        Log.d("DEBUGING ------->", "" + position + " - " + ids[position]);
         //Pega o arquivo passando a posição dele
         ContentResolver contentResolver = holder.getImageView().getContext().getContentResolver();
 
@@ -90,13 +92,13 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
         workerTask.execute(ids[position]);*/
         //holder.getImageView().setImageBitmap(imageBitmap);
 
-        if(checkBitmapWorkerTask(imageFile, holder.getImageView())) {
-            BitmapWorkerTask bitmapWorkerTask = new BitmapWorkerTask(holder.getImageView());
+        if(checkBitmapWorkerTask(holder.getImageView().getDrawable(), holder.getImageView())) {
+            BitmapWorkerTask bitmapWorkerTask = new BitmapWorkerTask(holder.getImageView(), mImageWidth, mImageHeight, contentResolver);
             AsyncDrawable asyncDrawable = new AsyncDrawable(holder.getImageView().getResources(),
                     placeholderBitmap,
                     bitmapWorkerTask);
             holder.getImageView().setImageDrawable(asyncDrawable);
-            bitmapWorkerTask.execute(imageFile);
+            bitmapWorkerTask.execute(ids[position]);
         }
     }
 
@@ -122,15 +124,17 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
         }
     }
 
-    public static boolean checkBitmapWorkerTask(String dataImage, ImageView imageView) {
+    public static boolean checkBitmapWorkerTask(Drawable imageDrawable, ImageView imageView) {
         BitmapWorkerTask bitmapWorkerTask = getBitmapWorkerTask(imageView);
         if(bitmapWorkerTask != null) {
-            final int workerFile = bitmapWorkerTask.getImagePosition();
-            if(workerFile != null) {
-                bitmapWorkerTask.cancel(true);
+            final Drawable workerDrawable = bitmapWorkerTask.getImageDrawable();
+            if(workerDrawable != null) {
+                if(workerDrawable != imageView.getDrawable()) {
+                    bitmapWorkerTask.cancel(true);
+                }
             } else {
                 // bitmap worker task file é o mesmo que a imageview está esperando
-                //então não faz nada
+                //então retorna falso
                 return false;
             }
         }

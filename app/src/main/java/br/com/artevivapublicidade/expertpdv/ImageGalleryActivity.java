@@ -1,6 +1,7 @@
 package br.com.artevivapublicidade.expertpdv;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -9,6 +10,8 @@ import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
+import android.util.Log;
+import android.util.LruCache;
 
 
 public class ImageGalleryActivity extends AppCompatActivity {
@@ -17,6 +20,7 @@ public class ImageGalleryActivity extends AppCompatActivity {
     private static int mColumnCount = 3;
     private static int mImageWidth;
     private static int mImageHeight;
+    private static LruCache<String, Bitmap> mMemoryCache;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +43,16 @@ public class ImageGalleryActivity extends AppCompatActivity {
         //Cria o objeto do layout e associa ao RecyclerVIew
         RecyclerView.Adapter imageAdapter = new ImageAdapter(mGalleryFolder, mImageWidth, mImageHeight, this);
         mRecyclerView.setAdapter(imageAdapter);
+
+        final int maxMemorySize = (int) Runtime.getRuntime().maxMemory() / 1024;
+        final int cacheSize = maxMemorySize / 10;
+
+        mMemoryCache = new LruCache<String, Bitmap>(cacheSize) {
+            @Override
+            protected int sizeOf(String key, Bitmap value) {
+                return value.getByteCount() / 1024;
+            }
+        };
     }
 
     @Override
@@ -51,6 +65,10 @@ public class ImageGalleryActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         RecyclerView.Adapter newImageAdapter = new ImageAdapter(mGalleryFolder, mImageWidth, mImageHeight, this);
         mRecyclerView.swapAdapter(newImageAdapter, false);
+    }
+
+    public static Bitmap getBitmapFromMemoryCache(String key) {
+        return mMemoryCache.get(key);
     }
 }
 
