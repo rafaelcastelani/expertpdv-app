@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
+import android.view.View;
 
 
 public class ImageGalleryActivity extends AppCompatActivity {
@@ -30,12 +31,11 @@ public class ImageGalleryActivity extends AppCompatActivity {
 
         //Cria um GridLayout com 1 coluna
         GridLayoutManager layoutManager = new GridLayoutManager(this, mColumnCount);
-
         //Associa este layout ao RecyclerView
         mRecyclerView.setLayoutManager(layoutManager);
 
         //Cria o objeto do layout e associa ao RecyclerVIew
-        RecyclerView.Adapter imageAdapter = new ImageAdapter(mImageWidth, mImageHeight, getApplicationContext());
+        RecyclerView.Adapter imageAdapter = new ImageAdapter(mImageWidth, mImageHeight, getApplicationContext(), mRecyclerView);
         mRecyclerView.setAdapter(imageAdapter);
     }
 
@@ -46,7 +46,7 @@ public class ImageGalleryActivity extends AppCompatActivity {
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        RecyclerView.Adapter newImageAdapter = new ImageAdapter(mImageWidth, mImageHeight, getApplicationContext());
+        RecyclerView.Adapter newImageAdapter = new ImageAdapter(mImageWidth, mImageHeight, getApplicationContext(), mRecyclerView);
         mRecyclerView.swapAdapter(newImageAdapter, false);
 
     }
