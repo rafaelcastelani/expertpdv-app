@@ -4,6 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:clickable="true"
     android:padding="4dp"
     android:id="@+id/imageContainer">
 
@@ -22,5 +23,30 @@
         android:layout_alignParentTop="true"
         android:visibility="invisible"
         app:buttonTint="@color/colorPrimary" />
+
+    <RelativeLayout
+        android:id="@+id/bgCheckedImage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_toEndOf="@+id/checkImage"
+        android:layout_toRightOf="@+id/checkImage"
+        android:background="#99000000"
+        android:layout_alignParentTop="true"
+
+        android:visibility="invisible"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
+    </RelativeLayout>
+
+    <ImageView
+        android:id="@+id/checkedImageIcon"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:padding="4dp"
+        android:tint="#FFFFFF"
+        android:visibility="invisible"
+        app:srcCompat="@drawable/ic_check_black_24dp" />
 
 </RelativeLayout>

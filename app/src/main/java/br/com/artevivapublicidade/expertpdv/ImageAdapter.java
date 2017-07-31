@@ -10,12 +10,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-
+import android.view.Menu;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> {
@@ -27,7 +28,10 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
     private static int mImageHeight;
     private RelativeLayout relativeLayout;
     private RecyclerView mRecyclerView;
-    private final View.OnClickListener mOnCLickListener = new OnItemClickListener();
+    private List<ItemModel> imagesList;
+    private Context viewContext;
+
+    private int totalItemsSelected = 0;
 
     //Construtor
     public ImageAdapter(int imageWidth, int imageHeight, Context context, RecyclerView recyclerView) {
@@ -36,6 +40,8 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
         mImageHeight = imageHeight;
         mRecyclerView = recyclerView;
         Cursor imageCursor = context.getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, columns, null, null, MediaStore.Images.Media._ID + " DESC");
+
+        imagesList = new ArrayList<>();
         if(imageCursor != null) {
             this.count = imageCursor.getCount();
 
@@ -48,6 +54,8 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
                 int imageColumnIndex = imageCursor.getColumnIndex(MediaStore.Images.Media._ID);
                 //Adiciona o id atual no array ids
                 ids[i] = imageCursor.getInt(imageColumnIndex);
+                imagesList.add(new ItemModel("Imagem " + i));
+
             }
             imageCursor.close();
         }
@@ -61,18 +69,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
         relativeLayout = view.findViewById(R.id.imageContainer);
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(mImageWidth, mImageHeight);
         relativeLayout.setLayoutParams(params);
-
-        relativeLayout.setOnClickListener(mOnCLickListener);
-
-        CheckBox ckImage = view.findViewById(R.id.checkImage);
-        ckImage.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                RelativeLayout relativeLayout =(RelativeLayout) (ViewGroup) compoundButton.getParent();
-                ImageView imageView = relativeLayout.findViewById(R.id.imageGalleryView);
-                changeImageBorder(imageView, compoundButton.isChecked());
-            }
-        });
+        viewContext = view.getContext();
 
         //Retorna a view como parte do ViewHolder
         return new ViewHolder(view);
@@ -88,8 +85,37 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
 
     @Override
     //Associa as imagens de uma determinada pasta em uma View quando esta fica visível na tela
-    public void onBindViewHolder(ViewHolder holder, int position) {
-        dataImages[position] = holder.getImageView();
+    public void onBindViewHolder(final ViewHolder holder, int position) {
+        final ItemModel itemModel = imagesList.get(position);
+        checkImage(holder.getImageView(), itemModel.isSelected());
+
+        if(getTotalItemsSelected() > 0) {
+            changeGalleryTitle(getTotalItemsSelected()+"");
+        }
+
+        holder.getImageView().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                itemModel.setSelected(!itemModel.isSelected());
+
+                if(itemModel.isSelected()) {
+                    addItemSelected();
+                } else {
+                    removeItemSelected();
+                }
+
+                checkImage(holder.getImageView(), itemModel.isSelected());
+
+                if(getTotalItemsSelected() > 0) {
+                    showMenuOptions(true);
+                    changeGalleryTitle(getTotalItemsSelected() + "");
+                } else {
+                    showMenuOptions(false);
+                    changeGalleryTitle((String)viewContext.getResources().getText(R.string.activity_image_gallery));
+                }
+            }
+        });
+
         Uri imageUri = Uri.withAppendedPath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, String.valueOf(ids[position]));
         Picasso.with(holder.getImageView().getContext()).load(imageUri).fit().centerCrop().into((holder.getImageView()));
     }
@@ -99,30 +125,54 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
         return this.count;
     }
 
+    private void addItemSelected() {
+        this.totalItemsSelected++;
+    }
 
-    private void checkImage(View view) {
-        CheckBox ckImage = view.findViewById(R.id.checkImage);
-        ImageView imageView = view.findViewById(R.id.imageGalleryView);
-        if(ckImage.isChecked()) {
-            changeImageBorder(imageView, false);
-            ckImage.setChecked(false);
-            ckImage.setVisibility(View.INVISIBLE);
+    private void removeItemSelected() {
+        this.totalItemsSelected--;
+    }
+
+    private int getTotalItemsSelected() {
+        return this.totalItemsSelected;
+    }
+
+    private void checkImage(ImageView imageView, Boolean change) {
+        View parentView = (View) imageView.getParent();
+        CheckBox ckImage = parentView.findViewById(R.id.checkImage);
+        RelativeLayout bgCheckedImage = parentView.findViewById(R.id.bgCheckedImage);
+        ImageView checkedImageIcon = parentView.findViewById(R.id.checkedImageIcon);
+        ckImage.setChecked(change);
+        if(change) {
+            bgCheckedImage.setVisibility(View.VISIBLE);
+            checkedImageIcon.setVisibility(View.VISIBLE);
         } else {
-            changeImageBorder(imageView, true);
-            ckImage.setChecked(true);
-            ckImage.setVisibility(View.VISIBLE);
+            bgCheckedImage.setVisibility(View.INVISIBLE);
+            checkedImageIcon.setVisibility(View.INVISIBLE);
         }
     }
 
-    private void changeImageBorder(ImageView imageView, Boolean change) {
-        ThemeHelper themeHelper = new ThemeHelper();
-        if(change) {
-            imageView.setPadding(3, 3, 3, 3);
-            imageView.setBackgroundColor(themeHelper.getPrimaryColor(imageView.getContext()));
-        } else {
-            imageView.setPadding(0, 0, 0, 0);
-            imageView.setBackgroundColor(Color.parseColor("#000000"));
+    public void uncheckAllImages() {
+        final int totalImagesContainer = mRecyclerView.getChildCount();
+        for (int i = 0; i < totalImagesContainer; i++) {
+            View v = mRecyclerView.getChildAt(i);
+            ImageView imageView = v.findViewById(R.id.imageGalleryView);
+            checkImage(imageView, false);
+            showMenuOptions(false);
+            ItemModel itemModel = imagesList.get(i);
+            itemModel.setSelected(false);
         }
+        changeGalleryTitle((String)viewContext.getResources().getText(R.string.activity_image_gallery));
+    }
+
+    private void changeGalleryTitle(String title) {
+        if(viewContext instanceof ImageGalleryActivity) {
+            ((ImageGalleryActivity) viewContext).setTitle(title);
+        }
+    }
+
+    private void showMenuOptions(boolean show) {
+        ImageGalleryActivity.getMenu().setGroupVisible(R.id.menu_group_select_photos, show);
     }
 
     //Associa views com o ViewHolder do RecyclerView
@@ -140,18 +190,6 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
         //Faz com que o imageView seja acessível dentro do ImageAdapter
         public ImageView getImageView() {
             return imageView;
-        }
-    }
-
-    private class OnItemClickListener implements View.OnClickListener {
-        @Override
-        public void onClick(View view) {
-            int itemPosition = mRecyclerView.getChildLayoutPosition(view);
-            ImageView item = dataImages[itemPosition];
-            ImageView imageView = view.findViewById(R.id.imageGalleryView);
-            if(imageView.getDrawable() == item.getDrawable()) {
-                changeImageBorder(imageView, true);
-            }
         }
     }
 }
