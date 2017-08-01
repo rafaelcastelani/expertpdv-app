@@ -9,4 +9,7 @@
 
     <string name="error_camera_not_found">Erro: Câmera não encontrada</string>
     <string name="error_select_photos">Erro: Houve um erro desconhecido ao selecionar fotos</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

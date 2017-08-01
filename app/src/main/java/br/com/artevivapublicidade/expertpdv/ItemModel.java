@@ -1,16 +1,33 @@
 package br.com.artevivapublicidade.expertpdv;
 
+import android.net.Uri;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ItemModel {
-    private String text;
+    private Uri uri;
     private boolean isSelected = false;
+    private List<ItemModel> selectedItems;
 
-    public ItemModel(String text) {
-        this.text = text;
+    public ItemModel(Uri uri) {
+        this.selectedItems = new ArrayList<>();
+        this.uri = uri;
     }
 
-    public String getText() {
-        return text;
+    public Uri getUri() {
+        return this.uri;
+    }
+
+    public String getPath() {
+        return this.uri.getPath();
+    }
+
+    public String getName() {
+        File imageFile = new File(getPath());
+
+        return imageFile.getName();
     }
 
     public void setSelected(boolean selected) {
