@@ -2,5 +2,5 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="br.com.artevivapublicidade.expertpdv.SelectPhotosOptionsFragment">
-</FrameLayout>
+    android:id="@+id/fragment_select_photos"
+    tools:context="br.com.artevivapublicidade.expertpdv.SelectPhotosOptionsFragment" />

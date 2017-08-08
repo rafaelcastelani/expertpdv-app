@@ -5,10 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class DB {
+abstract class DB<T> {
     private SQLiteDatabase db;
 
     public DB(Context context) {
@@ -17,22 +14,21 @@ public class DB {
         db = auxDB.getWritableDatabase();
     }
 
-    public void insert(String tableName, String nullColumnHack, ContentValues values) {
-        db.insert(tableName, nullColumnHack, values);
+    protected long insertData(String tableName, String nullColumnHack, ContentValues values) {
+        return db.insert(tableName, nullColumnHack, values);
     }
 
-    public void update(String tableName, ContentValues values, String whereClause, String[] whereArgs) {
-        db.update(tableName, values, whereClause, whereArgs);
+    protected int updateData(String tableName, ContentValues values, String whereClause, String[] whereArgs) {
+        return db.update(tableName, values, whereClause, whereArgs);
     }
 
-    public void delete(String tableName, String whereClause, String[] whereArgs) {
-        db.delete(tableName, whereClause, whereArgs);
+    protected int deleteData(String tableName, String whereClause, String[] whereArgs) {
+        return db.delete(tableName, whereClause, whereArgs);
     }
 
-    public List select(String tableName, String[] columns, String whereClause, String[] whereArgs, String groupBy, String having, String orderBy, String limit) {
+    protected Cursor select(String tableName, String[] columns, String whereClause, String[] whereArgs, String groupBy, String having, String orderBy, String limit) {
         Cursor cursor = db.query(tableName, columns, whereClause, whereArgs, groupBy, having, orderBy, limit);
-        List list = new ArrayList();
 
-        return list;
+        return cursor;
     }
 }

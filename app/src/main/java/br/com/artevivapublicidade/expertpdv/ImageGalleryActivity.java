@@ -1,17 +1,19 @@
 package br.com.artevivapublicidade.expertpdv;
 
+import android.content.ContentValues;
 import android.content.Intent;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class ImageGalleryActivity extends AppCompatActivity {
@@ -45,7 +47,7 @@ public class ImageGalleryActivity extends AppCompatActivity {
         //Associa este layout ao RecyclerView
         mRecyclerView.setLayoutManager(layoutManager);
         //Cria o objeto do layout e associa ao RecyclerVIew
-        imageAdapter = new ImageAdapter(mImageWidth, mImageHeight, getApplicationContext(), mRecyclerView);
+        imageAdapter = new ImageGalleryItemAdapter(mImageWidth, mImageHeight, getApplicationContext(), mRecyclerView);
         mRecyclerView.setAdapter(imageAdapter);
     }
 
@@ -66,22 +68,68 @@ public class ImageGalleryActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
             case R.id.deselect_photos:
-                ((ImageAdapter)imageAdapter).uncheckAllImages();
+                ((ImageGalleryItemAdapter)imageAdapter).uncheckAllImages();
+                break;
+            case R.id.select_photos:
+                ListItemModel listItemModel = ListItemModel.getInstance();
+
+                Photo catalogPhoto = new Photo(getApplicationContext());
+                List<Photo> listAllPhotos = catalogPhoto.findAll();
+                catalogPhoto.delete(null, null);
+
+                List<String> photoFileList = new ArrayList<>();
+                List<String> itemModelNameList = new ArrayList<>();
+
+                for(Photo photo: listAllPhotos) {
+                    photoFileList.add(photo.getFilePhoto());
+                }
+
+                if(listItemModel.getListItems().size() > 0) {
+                    //Salva os itens no banco de dados
+                    for(ItemModel itemModel: listItemModel.getListItems()) {
+                        itemModelNameList.add(itemModel.getName());
+                        Photo photo = catalogPhoto.findByName(itemModel.getName());
+                        if(photo == null) {
+                            ContentValues contentValues = new ContentValues();
+                            contentValues.put("pathPhoto", itemModel.getPath());
+                            contentValues.put("filePhoto", itemModel.getName());
+                            catalogPhoto.insert(null, contentValues);
+                        }
+                    }
+                }
+
+                List<String> diffPhotoFileList = new ArrayList<>(photoFileList);
+                diffPhotoFileList.removeAll(itemModelNameList);
+
+                //Deleta os itens do banco que não estão mais selecionados
+                catalogPhoto.delete("filePhoto IN (?)", new String[]{TextUtils.join(",", diffPhotoFileList)});
+
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                startActivity(intent);
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
+        Photo catalogPhoto = new Photo(getApplicationContext());
+        List<Photo> listPhotos = catalogPhoto.findAll();
+        boolean visibility = false;
+
+        if(listPhotos.size() > 0) {
+            visibility = true;
+        }
+
         toolbarMenu = menu;
-        menu.setGroupVisible(R.id.menu_group_select_photos, false);
+        menu.setGroupVisible(R.id.menu_group_select_photos, visibility);
         super.onPrepareOptionsMenu(menu);
         return true;
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        RecyclerView.Adapter newImageAdapter = new ImageAdapter(mImageWidth, mImageHeight, getApplicationContext(), mRecyclerView);
+        RecyclerView.Adapter newImageAdapter = new ImageGalleryItemAdapter(mImageWidth, mImageHeight, getApplicationContext(), mRecyclerView);
         mRecyclerView.swapAdapter(newImageAdapter, false);
 
     }

@@ -2,8 +2,6 @@ package br.com.artevivapublicidade.expertpdv;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v7.widget.RecyclerView;
@@ -21,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> {
+public class ImageGalleryItemAdapter extends RecyclerView.Adapter<ImageGalleryItemAdapter.ViewHolder> {
 
     private int count;
     private int ids[];
@@ -32,11 +30,13 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
     private RecyclerView mRecyclerView;
     private List<ItemModel> imagesList;
     private Context viewContext;
+    private List<Uri> imagesUriList;
+    private Photo catalogPhotos;
 
     private int totalItemsSelected = 0;
 
     //Construtor
-    public ImageAdapter(int imageWidth, int imageHeight, Context context, RecyclerView recyclerView) {
+    public ImageGalleryItemAdapter(int imageWidth, int imageHeight, Context context, RecyclerView recyclerView) {
         final String[] columns = {MediaStore.Images.Media.DATA, MediaStore.Images.Media._ID};
         mImageWidth = imageWidth;
         mImageHeight = imageHeight;
@@ -44,22 +44,34 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
         Cursor imageCursor = context.getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, columns, null, null, MediaStore.Images.Media._ID + " DESC");
 
         imagesList = new ArrayList<>();
+        imagesUriList = new ArrayList<>();
         imageViewList = new ArrayList<>();
         if(imageCursor != null) {
             this.count = imageCursor.getCount();
-
             //Cria um array de ints com o tamanho da lista
             ids = new int[this.count];
-            for(int i = 0; i < this.count; i++) {
+            catalogPhotos = new Photo(context);
+            for(int i = 0; i < imageCursor.getCount(); i++) {
                 imageCursor.moveToPosition(i);
                 //Pega o índice da coluna ID
                 int imageColumnIndex = imageCursor.getColumnIndex(MediaStore.Images.Media._ID);
-                //Adiciona o id atual no array ids
                 ids[i] = imageCursor.getInt(imageColumnIndex);
-
                 Uri imageUri = Uri.withAppendedPath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, String.valueOf(ids[i]));
-                imagesList.add(new ItemModel(imageUri));
+
+                Photo photo = catalogPhotos.findByPath(imageUri.getPath());
+
+                ItemModel itemModel = new ItemModel(imageUri);
+                if(photo != null && photo.getStatusPhoto() == 1) {
+                    Log.d("STATUS --->", photo.getStatusPhoto()+"");
+                    itemModel.setSelected(true);
+                    totalItemsSelected += 1;
+                }
+
+                //Adiciona o id atual no array ids
+                imagesList.add(itemModel);
+                imagesUriList.add(imageUri);
             }
+
             imageCursor.close();
         }
     }
@@ -79,14 +91,11 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
     }
 
     @Override
-    //Associa as imagens de uma determinada pasta em uma View quando esta fica visível na tela
+    //Associa as imagens na View quando esta fica visível na tela
     public void onBindViewHolder(final ViewHolder holder, int position) {
         final ItemModel itemModel = imagesList.get(position);
-        checkImage(holder.getImageView(), itemModel.isSelected());
 
-        if(getTotalItemsSelected() > 0) {
-            changeGalleryTitle(getTotalItemsSelected()+"");
-        }
+        checkImage(holder.getImageView(), itemModel.isSelected());
 
         holder.getImageView().setOnClickListener(new View.OnClickListener() {
             @Override
@@ -94,9 +103,9 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
                 itemModel.setSelected(!itemModel.isSelected());
 
                 if(itemModel.isSelected()) {
-                    addItemSelected();
+                    addItemSelected(itemModel);
                 } else {
-                    removeItemSelected();
+                    removeItemSelected(itemModel);
                 }
 
                 checkImage(holder.getImageView(), itemModel.isSelected());
@@ -115,6 +124,11 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
         Picasso.with(holder.getImageView().getContext()).load(imageUri).fit().centerCrop().into((holder.getImageView()));
 
         imageViewList.add(holder.getImageView());
+
+        if(getTotalItemsSelected() > 0) {
+            changeGalleryTitle(getTotalItemsSelected()+"");
+
+        }
     }
 
     @Override
@@ -122,11 +136,15 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
         return this.count;
     }
 
-    private void addItemSelected() {
+    private void addItemSelected(ItemModel itemModel) {
+        ListItemModel listItemModel = ListItemModel.getInstance();
+        listItemModel.add(itemModel);
         this.totalItemsSelected++;
     }
 
-    private void removeItemSelected() {
+    private void removeItemSelected(ItemModel itemModel) {
+        ListItemModel listItemModel = ListItemModel.getInstance();
+        listItemModel.remove(itemModel);
         this.totalItemsSelected--;
     }
 
@@ -140,6 +158,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
         RelativeLayout bgCheckedImage = parentView.findViewById(R.id.bgCheckedImage);
         ImageView checkedImageIcon = parentView.findViewById(R.id.checkedImageIcon);
         ckImage.setChecked(change);
+
         if(change) {
             bgCheckedImage.setVisibility(View.VISIBLE);
             checkedImageIcon.setVisibility(View.VISIBLE);
@@ -153,7 +172,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
         for(int i = 0; i < imagesList.size(); i++) {
             ItemModel itemModel = imagesList.get(i);
             if(itemModel.isSelected()) {
-                removeItemSelected();
+                removeItemSelected(itemModel);
             }
 
             if(i < imageViewList.size()) {
@@ -188,7 +207,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
             //imageView = (ImageView) view;
         }
 
-        //Faz com que o imageView seja acessível dentro do ImageAdapter
+        //Faz com que o imageView seja acessível dentro do ImageGalleryItemAdapter
         public ImageView getImageView() {
             return imageView;
         }
