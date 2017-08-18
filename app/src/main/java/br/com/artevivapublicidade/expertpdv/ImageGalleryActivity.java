@@ -71,7 +71,7 @@ public class ImageGalleryActivity extends AppCompatActivity {
                 ((ImageGalleryItemAdapter)imageAdapter).uncheckAllImages();
                 break;
             case R.id.select_photos:
-                ListItemModel listItemModel = ListItemModel.getInstance();
+                ListItem listItem = ListItem.getInstance();
 
                 Photo catalogPhoto = new Photo(getApplicationContext());
                 List<Photo> listAllPhotos = catalogPhoto.findAll();
@@ -84,9 +84,9 @@ public class ImageGalleryActivity extends AppCompatActivity {
                     photoFileList.add(photo.getFilePhoto());
                 }
 
-                if(listItemModel.getListItems().size() > 0) {
+                if(listItem.getListItems().size() > 0) {
                     //Salva os itens no banco de dados
-                    for(ItemModel itemModel: listItemModel.getListItems()) {
+                    for(Item itemModel: listItem.getListItems()) {
                         itemModelNameList.add(itemModel.getName());
                         Photo photo = catalogPhoto.findByName(itemModel.getName());
                         if(photo == null) {

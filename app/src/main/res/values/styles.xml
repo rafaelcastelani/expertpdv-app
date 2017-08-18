@@ -15,4 +15,14 @@
         <item name="windowNoTitle">true</item>
     </style>
 
+    <style name="AppTheme.ButtonSuccess" parent="Base.Widget.AppCompat.Button">
+        <item name="colorButtonNormal">#029146</item>
+        <item name="android:textColor">#FFFFFF</item>
+    </style>
+
+    <style name="AppTheme.ButtonDanger" parent="Base.Widget.AppCompat.Button">
+        <item name="colorButtonNormal">#DE3329</item>
+        <item name="android:textColor">#FFFFFF</item>
+    </style>
+
 </resources>

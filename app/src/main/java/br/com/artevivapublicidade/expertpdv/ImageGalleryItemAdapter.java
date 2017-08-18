@@ -28,7 +28,7 @@ public class ImageGalleryItemAdapter extends RecyclerView.Adapter<ImageGalleryIt
     private static int mImageHeight;
     private RelativeLayout relativeLayout;
     private RecyclerView mRecyclerView;
-    private List<ItemModel> imagesList;
+    private List<Item> imagesList;
     private Context viewContext;
     private List<Uri> imagesUriList;
     private Photo catalogPhotos;
@@ -60,15 +60,15 @@ public class ImageGalleryItemAdapter extends RecyclerView.Adapter<ImageGalleryIt
 
                 Photo photo = catalogPhotos.findByPath(imageUri.getPath());
 
-                ItemModel itemModel = new ItemModel(imageUri);
+                Item item = new Item(imageUri);
                 if(photo != null && photo.getStatusPhoto() == 1) {
                     Log.d("STATUS --->", photo.getStatusPhoto()+"");
-                    itemModel.setSelected(true);
+                    item.setSelected(true);
                     totalItemsSelected += 1;
                 }
 
                 //Adiciona o id atual no array ids
-                imagesList.add(itemModel);
+                imagesList.add(item);
                 imagesUriList.add(imageUri);
             }
 
@@ -93,22 +93,22 @@ public class ImageGalleryItemAdapter extends RecyclerView.Adapter<ImageGalleryIt
     @Override
     //Associa as imagens na View quando esta fica visível na tela
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        final ItemModel itemModel = imagesList.get(position);
+        final Item item = imagesList.get(position);
 
-        checkImage(holder.getImageView(), itemModel.isSelected());
+        checkImage(holder.getImageView(), item.isSelected());
 
         holder.getImageView().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                itemModel.setSelected(!itemModel.isSelected());
+                item.setSelected(!item.isSelected());
 
-                if(itemModel.isSelected()) {
-                    addItemSelected(itemModel);
+                if(item.isSelected()) {
+                    addItemSelected(item);
                 } else {
-                    removeItemSelected(itemModel);
+                    removeItemSelected(item);
                 }
 
-                checkImage(holder.getImageView(), itemModel.isSelected());
+                checkImage(holder.getImageView(), item.isSelected());
 
                 if(getTotalItemsSelected() > 0) {
                     showMenuOptions(true);
@@ -136,15 +136,15 @@ public class ImageGalleryItemAdapter extends RecyclerView.Adapter<ImageGalleryIt
         return this.count;
     }
 
-    private void addItemSelected(ItemModel itemModel) {
-        ListItemModel listItemModel = ListItemModel.getInstance();
-        listItemModel.add(itemModel);
+    private void addItemSelected(Item item) {
+        ListItem listItem = ListItem.getInstance();
+        listItem.add(item);
         this.totalItemsSelected++;
     }
 
-    private void removeItemSelected(ItemModel itemModel) {
-        ListItemModel listItemModel = ListItemModel.getInstance();
-        listItemModel.remove(itemModel);
+    private void removeItemSelected(Item item) {
+        ListItem listItem = ListItem.getInstance();
+        listItem.remove(item);
         this.totalItemsSelected--;
     }
 
@@ -170,16 +170,16 @@ public class ImageGalleryItemAdapter extends RecyclerView.Adapter<ImageGalleryIt
 
     public void uncheckAllImages() {
         for(int i = 0; i < imagesList.size(); i++) {
-            ItemModel itemModel = imagesList.get(i);
-            if(itemModel.isSelected()) {
-                removeItemSelected(itemModel);
+            Item item = imagesList.get(i);
+            if(item.isSelected()) {
+                removeItemSelected(item);
             }
 
             if(i < imageViewList.size()) {
                 ImageView imageView = imageViewList.get(i);
                 checkImage(imageView, false);
             }
-            itemModel.setSelected(false);
+            item.setSelected(false);
         }
         showMenuOptions(false);
         changeGalleryTitle((String)viewContext.getResources().getText(R.string.activity_image_gallery));

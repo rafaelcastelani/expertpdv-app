@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DBCore extends SQLiteOpenHelper {
     private static final String DB_NAME = "ExpertPDV";
-    private static final int DB_VERSION = 3;
+    private static final int DB_VERSION = 5;
 
     public DBCore(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
@@ -20,7 +20,7 @@ public class DBCore extends SQLiteOpenHelper {
     //Caso a versão seja diferente, o banco é recriado
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
-        sqLiteDatabase.execSQL("DROP TABLE photo;");
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS photo;");
         onCreate(sqLiteDatabase);
     }
 }

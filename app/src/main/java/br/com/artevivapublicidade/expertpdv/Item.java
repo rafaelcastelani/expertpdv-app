@@ -6,12 +6,12 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ItemModel {
+public class Item {
     private Uri uri;
     private boolean isSelected = false;
-    private List<ItemModel> selectedItems;
+    private List<Item> selectedItems;
 
-    public ItemModel(Uri uri) {
+    public Item(Uri uri) {
         this.selectedItems = new ArrayList<>();
         this.uri = uri;
     }

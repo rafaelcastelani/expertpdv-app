@@ -21,12 +21,11 @@ public class SelectPhotosOptionsFragment extends DialogFragment {
     private final int CAMERA = 2;
 
     private String photoPath = "sdcard/ExpertPDV";
-    private PhotoFile photoFile;
+    private File photoFile;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        photoFile = PhotoFile.getInstance();
     }
 
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -66,8 +65,7 @@ public class SelectPhotosOptionsFragment extends DialogFragment {
 
             if(takePictureIntent.resolveActivity(getActivity().getPackageManager())!=null) {
                 savePhotoFile();
-                takePictureIntent.putExtra("photoFile", Uri.fromFile(photoFile.getFile()));
-                takePictureIntent.putExtra("photoFile2", "teste 2");
+                takePictureIntent.putExtra("photoFile", Uri.fromFile(getFile()));
                 getActivity().startActivityForResult(takePictureIntent, CAMERA);
             }
         } else {
@@ -84,6 +82,14 @@ public class SelectPhotosOptionsFragment extends DialogFragment {
         }
 
         File file = new File(folder, System.currentTimeMillis()+"");
-        photoFile.setFile(file);
+        setFile(file);
+    }
+
+    private void setFile(File photoFile) {
+        this.photoFile = photoFile;
+    }
+
+    private File getFile() {
+        return this.photoFile;
     }
 }
