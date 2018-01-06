@@ -25,4 +25,16 @@
         <item name="android:textColor">#FFFFFF</item>
     </style>
 
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="ThemeSpinner">
+        <!-- Color when pressed -->
+        <item name="colorAccent">#313131</item>
+        <!-- Default color for the dropdown arrow and line -->
+        <item name="colorControlNormal">#323232</item>
+        <item name="colorControlHighlight">#323232</item>
+    </style>
+
 </resources>

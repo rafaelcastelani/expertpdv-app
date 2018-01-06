@@ -3,11 +3,11 @@
     package="br.com.artevivapublicidade.expertpdv">
 
     <uses-permission android:name="android.permission.CAMERA" />
+
     <uses-feature android:name="android.hardware.camera" />
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
@@ -18,7 +18,12 @@
         android:roundIcon="@mipmap/app_icon_launcher"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity
+            android:name=".activity.LoginActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -26,15 +31,14 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ImageGalleryActivity"
-            android:label="@string/activity_image_gallery"
-            android:parentActivityName=".MainActivity"
+            android:name=".activity.SearchUserInfoActivity"
+            android:label="@string/activity_my_info"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".SearchUserInfoActivity"
-            android:label="@string/activity_my_info"
-            android:theme="@style/AppTheme"
-        />
+            android:name=".activity.SendImageActivity"
+            android:label="@string/title_activity_send_image"
+            android:parentActivityName=".activity.MainActivity"
+            android:theme="@style/AppTheme" />
     </application>
 
 </manifest>

@@ -10,5 +10,14 @@
 
     <string name="error_camera_not_found">Erro: Câmera não encontrada</string>
     <string name="error_select_photos">Erro: Houve um erro desconhecido ao selecionar fotos</string>
+    <string name="title_activity_send_image">Enviar Imagem</string>
+    <string name="action_settings">Opções</string>
+    <string name="logout_option">Sair</string>
+    <string name="estado">Estado</string>
+    <string name="cidade">Cidade</string>
+    <string name="etapa">Etapa</string>
+    <string name="enviar">Enviar</string>
+    <string name="loja">Loja</string>
+    <string name="title_activity_main2">Main2Activity</string>
 
 </resources>

@@ -1,4 +1,4 @@
-package br.com.artevivapublicidade.expertpdv;
+package br.com.artevivapublicidade.expertpdv.activity;
 
 import android.content.ContentValues;
 import android.content.Intent;
@@ -14,6 +14,12 @@ import android.view.MenuItem;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import br.com.artevivapublicidade.expertpdv.adapter.ImageGalleryItemAdapter;
+import br.com.artevivapublicidade.expertpdv.model.layout.Item;
+import br.com.artevivapublicidade.expertpdv.model.layout.ListItem;
+import br.com.artevivapublicidade.expertpdv.model.layout.Photo;
+import br.com.artevivapublicidade.expertpdv.R;
 
 
 public class ImageGalleryActivity extends AppCompatActivity {
@@ -66,47 +72,51 @@ public class ImageGalleryActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()) {
+        switch (item.getItemId()) {
             case R.id.deselect_photos:
-                ((ImageGalleryItemAdapter)imageAdapter).uncheckAllImages();
+                ((ImageGalleryItemAdapter) imageAdapter).uncheckAllImages();
                 break;
             case R.id.select_photos:
                 ListItem listItem = ListItem.getInstance();
 
                 Photo catalogPhoto = new Photo(getApplicationContext());
-                List<Photo> listAllPhotos = catalogPhoto.findAll();
-                catalogPhoto.delete(null, null);
+                try {
+                    List<Photo> listAllPhotos = catalogPhoto.findAll();
+                    catalogPhoto.delete(null, null);
 
-                List<String> photoFileList = new ArrayList<>();
-                List<String> itemModelNameList = new ArrayList<>();
+                    List<String> photoFileList = new ArrayList<>();
+                    List<String> itemModelNameList = new ArrayList<>();
 
-                for(Photo photo: listAllPhotos) {
-                    photoFileList.add(photo.getFilePhoto());
-                }
+                    for (Photo photo : listAllPhotos) {
+                        photoFileList.add(photo.getFilePhoto());
+                    }
 
-                if(listItem.getListItems().size() > 0) {
-                    //Salva os itens no banco de dados
-                    for(Item itemModel: listItem.getListItems()) {
-                        itemModelNameList.add(itemModel.getName());
-                        Photo photo = catalogPhoto.findByName(itemModel.getName());
-                        if(photo == null) {
-                            ContentValues contentValues = new ContentValues();
-                            contentValues.put("pathPhoto", itemModel.getPath());
-                            contentValues.put("filePhoto", itemModel.getName());
-                            catalogPhoto.insert(null, contentValues);
+                    if (listItem.getListItems().size() > 0) {
+                        //Salva os itens no banco de dados
+                        for (Item itemModel : listItem.getListItems()) {
+                            itemModelNameList.add(itemModel.getName());
+                            Photo photo = catalogPhoto.findByName(itemModel.getName());
+                            if (photo == null) {
+                                ContentValues contentValues = new ContentValues();
+                                contentValues.put("pathPhoto", itemModel.getPath());
+                                contentValues.put("filePhoto", itemModel.getName());
+                                catalogPhoto.insert(null, contentValues);
+                            }
                         }
                     }
+
+                    List<String> diffPhotoFileList = new ArrayList<>(photoFileList);
+                    diffPhotoFileList.removeAll(itemModelNameList);
+
+                    //Deleta os itens do banco que não estão mais selecionados
+                    catalogPhoto.delete("filePhoto IN (?)", new String[]{TextUtils.join(",", diffPhotoFileList)});
+
+                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    startActivity(intent);
+                    break;
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
-
-                List<String> diffPhotoFileList = new ArrayList<>(photoFileList);
-                diffPhotoFileList.removeAll(itemModelNameList);
-
-                //Deleta os itens do banco que não estão mais selecionados
-                catalogPhoto.delete("filePhoto IN (?)", new String[]{TextUtils.join(",", diffPhotoFileList)});
-
-                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                startActivity(intent);
-                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -114,17 +124,22 @@ public class ImageGalleryActivity extends AppCompatActivity {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         Photo catalogPhoto = new Photo(getApplicationContext());
-        List<Photo> listPhotos = catalogPhoto.findAll();
-        boolean visibility = false;
+        try {
+            List<Photo> listPhotos = catalogPhoto.findAll();
+            boolean visibility = false;
 
-        if(listPhotos.size() > 0) {
-            visibility = true;
+            if (listPhotos.size() > 0) {
+                visibility = true;
+            }
+
+            toolbarMenu = menu;
+            menu.setGroupVisible(R.id.menu_group_select_photos, visibility);
+            super.onPrepareOptionsMenu(menu);
+            return true;
+        }catch (Exception ex){
+            ex.printStackTrace();
+            return false;
         }
-
-        toolbarMenu = menu;
-        menu.setGroupVisible(R.id.menu_group_select_photos, visibility);
-        super.onPrepareOptionsMenu(menu);
-        return true;
     }
 
     @Override

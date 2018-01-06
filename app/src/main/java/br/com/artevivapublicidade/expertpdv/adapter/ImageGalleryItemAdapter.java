@@ -1,4 +1,4 @@
-package br.com.artevivapublicidade.expertpdv;
+package br.com.artevivapublicidade.expertpdv.adapter;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -18,6 +18,10 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.List;
 
+import br.com.artevivapublicidade.expertpdv.model.layout.Item;
+import br.com.artevivapublicidade.expertpdv.model.layout.ListItem;
+import br.com.artevivapublicidade.expertpdv.model.layout.Photo;
+import br.com.artevivapublicidade.expertpdv.R;
 import br.com.artevivapublicidade.expertpdv.activity.ImageGalleryActivity;
 
 
@@ -48,30 +52,34 @@ public class ImageGalleryItemAdapter extends RecyclerView.Adapter<ImageGalleryIt
         imagesList = new ArrayList<>();
         imagesUriList = new ArrayList<>();
         imageViewList = new ArrayList<>();
-        if(imageCursor != null) {
+        if (imageCursor != null) {
             this.count = imageCursor.getCount();
             //Cria um array de ints com o tamanho da lista
             ids = new int[this.count];
             catalogPhotos = new Photo(context);
-            for(int i = 0; i < imageCursor.getCount(); i++) {
+            for (int i = 0; i < imageCursor.getCount(); i++) {
                 imageCursor.moveToPosition(i);
                 //Pega o índice da coluna ID
                 int imageColumnIndex = imageCursor.getColumnIndex(MediaStore.Images.Media._ID);
                 ids[i] = imageCursor.getInt(imageColumnIndex);
                 Uri imageUri = Uri.withAppendedPath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, String.valueOf(ids[i]));
 
-                Photo photo = catalogPhotos.findByPath(imageUri.getPath());
+                try {
+                    Photo photo = catalogPhotos.findByPath(imageUri.getPath());
+                    Item item = new Item(imageUri);
+                    if (photo != null && photo.getStatusPhoto() == 1) {
+                        Log.d("STATUS --->", photo.getStatusPhoto() + "");
+                        item.setSelected(true);
+                        totalItemsSelected += 1;
+                    }
 
-                Item item = new Item(imageUri);
-                if(photo != null && photo.getStatusPhoto() == 1) {
-                    Log.d("STATUS --->", photo.getStatusPhoto()+"");
-                    item.setSelected(true);
-                    totalItemsSelected += 1;
+                    //Adiciona o id atual no array ids
+                    imagesList.add(item);
+                    imagesUriList.add(imageUri);
+                }catch (Exception ex){
+                    ex.printStackTrace();
+                    return;
                 }
-
-                //Adiciona o id atual no array ids
-                imagesList.add(item);
-                imagesUriList.add(imageUri);
             }
 
             imageCursor.close();
@@ -104,7 +112,7 @@ public class ImageGalleryItemAdapter extends RecyclerView.Adapter<ImageGalleryIt
             public void onClick(View view) {
                 item.setSelected(!item.isSelected());
 
-                if(item.isSelected()) {
+                if (item.isSelected()) {
                     addItemSelected(item);
                 } else {
                     removeItemSelected(item);
@@ -112,12 +120,12 @@ public class ImageGalleryItemAdapter extends RecyclerView.Adapter<ImageGalleryIt
 
                 checkImage(holder.getImageView(), item.isSelected());
 
-                if(getTotalItemsSelected() > 0) {
+                if (getTotalItemsSelected() > 0) {
                     showMenuOptions(true);
                     changeGalleryTitle(getTotalItemsSelected() + "");
                 } else {
                     showMenuOptions(false);
-                    changeGalleryTitle((String)viewContext.getResources().getText(R.string.activity_image_gallery));
+                    changeGalleryTitle((String) viewContext.getResources().getText(R.string.activity_image_gallery));
                 }
             }
         });
@@ -127,8 +135,8 @@ public class ImageGalleryItemAdapter extends RecyclerView.Adapter<ImageGalleryIt
 
         imageViewList.add(holder.getImageView());
 
-        if(getTotalItemsSelected() > 0) {
-            changeGalleryTitle(getTotalItemsSelected()+"");
+        if (getTotalItemsSelected() > 0) {
+            changeGalleryTitle(getTotalItemsSelected() + "");
 
         }
     }
@@ -161,7 +169,7 @@ public class ImageGalleryItemAdapter extends RecyclerView.Adapter<ImageGalleryIt
         ImageView checkedImageIcon = parentView.findViewById(R.id.checkedImageIcon);
         ckImage.setChecked(change);
 
-        if(change) {
+        if (change) {
             bgCheckedImage.setVisibility(View.VISIBLE);
             checkedImageIcon.setVisibility(View.VISIBLE);
         } else {
@@ -171,24 +179,24 @@ public class ImageGalleryItemAdapter extends RecyclerView.Adapter<ImageGalleryIt
     }
 
     public void uncheckAllImages() {
-        for(int i = 0; i < imagesList.size(); i++) {
+        for (int i = 0; i < imagesList.size(); i++) {
             Item item = imagesList.get(i);
-            if(item.isSelected()) {
+            if (item.isSelected()) {
                 removeItemSelected(item);
             }
 
-            if(i < imageViewList.size()) {
+            if (i < imageViewList.size()) {
                 ImageView imageView = imageViewList.get(i);
                 checkImage(imageView, false);
             }
             item.setSelected(false);
         }
         showMenuOptions(false);
-        changeGalleryTitle((String)viewContext.getResources().getText(R.string.activity_image_gallery));
+        changeGalleryTitle((String) viewContext.getResources().getText(R.string.activity_image_gallery));
     }
 
     private void changeGalleryTitle(String title) {
-        if(viewContext instanceof ImageGalleryActivity) {
+        if (viewContext instanceof ImageGalleryActivity) {
             ((ImageGalleryActivity) viewContext).setTitle(title);
         }
     }

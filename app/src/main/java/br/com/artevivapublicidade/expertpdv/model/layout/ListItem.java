@@ -1,4 +1,4 @@
-package br.com.artevivapublicidade.expertpdv;
+package br.com.artevivapublicidade.expertpdv.model.layout;
 
 
 import java.util.ArrayList;
@@ -12,7 +12,7 @@ public class ListItem {
         listItems = new ArrayList<>();
     }
 
-    public static ListItem getInstance() {
+    public  static ListItem getInstance() {
         return ourInstance;
     }
 

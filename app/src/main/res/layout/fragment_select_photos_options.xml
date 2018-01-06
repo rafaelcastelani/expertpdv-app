@@ -3,4 +3,4 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/fragment_select_photos"
-    tools:context="br.com.artevivapublicidade.expertpdv.SelectPhotosOptionsFragment" />
+    tools:context="br.com.artevivapublicidade.expertpdv.activity.fragment.SelectPhotosOptionsFragment" />
