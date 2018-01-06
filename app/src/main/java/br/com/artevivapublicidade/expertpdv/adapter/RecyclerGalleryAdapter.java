@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import java.io.InputStream;
-import java.util.ArrayList;
+import java.util.List;
 
 import br.com.artevivapublicidade.expertpdv.R;
 import br.com.artevivapublicidade.expertpdv.model.Photo;
@@ -21,11 +21,11 @@ import br.com.artevivapublicidade.expertpdv.model.Photo;
  * Created by Ricardo Melo on 06/01/2018.
  */
 
-public class RecyclerGalleryAdapter extends RecyclerView.Adapter<RecyclerGalleryAdapter.ViewHolder>{
-    private ArrayList<Photo> galleryList;
+public class RecyclerGalleryAdapter extends RecyclerView.Adapter<RecyclerGalleryAdapter.ViewHolder> {
+    private List<Photo> galleryList;
     private Context context;
 
-    public RecyclerGalleryAdapter(Context context, ArrayList<Photo> galleryList) {
+    public RecyclerGalleryAdapter(Context context, List<Photo> galleryList) {
         this.galleryList = galleryList;
         this.context = context;
     }
@@ -45,6 +45,7 @@ public class RecyclerGalleryAdapter extends RecyclerView.Adapter<RecyclerGallery
 
     @Override
     public int getItemCount() {
+        if (galleryList != null) return 0;
         return galleryList.size();
     }
 

@@ -51,7 +51,7 @@ import br.com.artevivapublicidade.expertpdv.util.PermissionID;
 
 public class MainActivity extends AppCompatActivity {
     private final int PICK_IMAGE_MULTIPLE = 1;
-    private ArrayList<Photo> photos;
+    private List<Photo> photos;
 
     //Necessário para habilitar exibição de imagens em vetor (no caso o ícone de "check" na seleção de foto)
     static {
@@ -75,10 +75,9 @@ public class MainActivity extends AppCompatActivity {
         Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar_main);
         setSupportActionBar(myToolbar);
         initFilter();
-        initRecycler();
     }
 
-    private void initFilter(){
+    private void initFilter() {
         Spinner spnEtapaFiltro = (Spinner) findViewById(R.id.spnEtapaFiltro);
         CampaignService campaignService = new CampaignService(this);
         List<Campaign> campaigns = null;
@@ -95,7 +94,8 @@ public class MainActivity extends AppCompatActivity {
                         try {
                             Stage stage = (Stage) parent.getItemAtPosition(position);
                             PhotoService photoService = new PhotoService(MainActivity.this);
-//                            photos = photoService.getPhotos(stage.getStageId(), stage.getCampaignId());
+                            photos = photoService.getPhotos(stage.getStageId(), stage.getCampaignId());
+                            initRecycler();
                         } catch (Exception ex) {
                             ex.printStackTrace();
                         }
@@ -113,28 +113,17 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void initRecycler(){
-        RecyclerView recyclerView = (RecyclerView)findViewById(R.id.recycler);
+    private void initRecycler() {
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler);
         recyclerView.setHasFixedSize(true);
 
-        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getApplicationContext(),3);
+        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getApplicationContext(), 3);
         recyclerView.setLayoutManager(layoutManager);
-        prepareData();
         RecyclerGalleryAdapter adapter = new RecyclerGalleryAdapter(getApplicationContext(), photos);
         recyclerView.setAdapter(adapter);
 
     }
 
-    private void prepareData(){
-        photos = new ArrayList<>();
-        photos.add(new Photo(1, "https://images-submarino.b2w.io/produtos/01/00/item/131051/8/131051887_1GG.jpg"));
-        photos.add(new Photo(2, "https://images-na.ssl-images-amazon.com/images/I/51kWFzVmLxL._SX258_BO1,204,203,200_QL70_.jpg"));
-        photos.add(new Photo(3, "https://images-na.ssl-images-amazon.com/images/I/61Ei-El9KzL._SY344_BO1,204,203,200_QL70_.jpg"));
-        photos.add(new Photo(4, "https://images-submarino.b2w.io/produtos/01/00/item/128335/4/128335408_1GG.jpg"));
-        photos.add(new Photo(5, "http://dskhvldhwok3h.cloudfront.net/image/upload/v1/products/583338bed277342c9800003f/sharing_images/t5xrss5iyj71p0i3077h.jpg"));
-        photos.add(new Photo(6, "http://www.geekyard.com.br/media/catalog/product/cache/1/image/500x500/9df78eab33525d08d6e5fb8d27136e95/c/a/card-game-caminho-da-aventura-hora-da-aventura-adventure-time-copag-01.jpg"));
-        photos.add(new Photo(7, "http://www.geekyard.com.br/media/catalog/product/cache/1/image/500x500/9df78eab33525d08d6e5fb8d27136e95/w/a/wallet-ninja-cartao-gadget-multifuncional-18-em-1-01.jpg"));
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

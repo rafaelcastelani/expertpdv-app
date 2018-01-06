@@ -235,7 +235,7 @@ public class SendImageActivity extends AppCompatActivity {
             if (message != null) {
                 Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(getApplicationContext(), "Houve um erro no upload!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Houve um erro no upload!", Toast.LENGTH_LONG).show();
             }
 
             runOnUiThread(new Thread() {
