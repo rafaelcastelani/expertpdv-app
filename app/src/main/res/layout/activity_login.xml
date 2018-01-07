@@ -31,7 +31,6 @@
             android:focusable="false"
             android:focusableInTouchMode="false"
             android:hint="Cpf/Cnpj"
-            android:inputType="textEmailAddress"
             android:textAlignment="viewStart"
             android:textColorHighlight="@color/black"
             android:textColorHint="?attr/colorControlNormal"

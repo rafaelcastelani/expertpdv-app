@@ -22,30 +22,12 @@
         android:elevation="5dp">
     </ViewFlipper>
 
-    <!--<ImageView-->
-        <!--android:id="@+id/imageViewSelecionado"-->
-        <!--android:layout_width="148dp"-->
-        <!--android:layout_height="136dp"-->
-        <!--android:layout_marginEnd="8dp"-->
-        <!--android:layout_marginStart="8dp"-->
-        <!--android:layout_marginTop="8dp"-->
-        <!--android:adjustViewBounds="false"-->
-        <!--android:contentDescription="Imagem selecionada"-->
-        <!--android:cropToPadding="false"-->
-        <!--android:scaleType="fitCenter"-->
-        <!--app:layout_constraintEnd_toEndOf="parent"-->
-        <!--app:layout_constraintStart_toStartOf="parent"-->
-        <!--app:layout_constraintTop_toTopOf="parent"-->
-        <!--app:srcCompat="@android:color/background_light" />-->
-
-
     <TextView
         android:id="@+id/txtViewEstado"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="18dp"
         android:text="@string/estado"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/flipper" />
@@ -78,9 +60,8 @@
         android:id="@+id/txtViewCidade"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="18dp"
         android:text="@string/cidade"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/separator" />
@@ -120,19 +101,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/separator2" />
 
-    <Spinner
-        android:id="@+id/spnLoja"
+    <AutoCompleteTextView
+        android:id="@+id/autoTxtLoja"
         android:layout_width="0dp"
-        android:layout_height="32dp"
+        android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="12dp"
-        android:theme="@style/ThemeSpinner"
-        android:visibility="visible"
+        android:completionThreshold="0"
+        android:textColor="@color/colorAccent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/txtLoja"
         app:layout_constraintTop_toBottomOf="@+id/separator2" />
-
 
     <View
         android:id="@+id/separator3"
@@ -142,7 +121,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/spnLoja" />
+        app:layout_constraintTop_toBottomOf="@+id/autoTxtLoja" />
 
 
     <TextView
@@ -150,8 +129,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="18dp"
         android:text="@string/etapa"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/separator3" />

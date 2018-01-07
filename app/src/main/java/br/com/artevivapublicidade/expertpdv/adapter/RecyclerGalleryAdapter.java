@@ -45,7 +45,7 @@ public class RecyclerGalleryAdapter extends RecyclerView.Adapter<RecyclerGallery
 
     @Override
     public int getItemCount() {
-        if (galleryList != null) return 0;
+        if (galleryList == null) return 0;
         return galleryList.size();
     }
 

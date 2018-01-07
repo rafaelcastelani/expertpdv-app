@@ -50,7 +50,7 @@ public class PhotoService {
                     JSONArray fotosJson = jsonResult.getJSONArray("photoList");
                     for (int i = 0; i < fotosJson.length(); i++) {
                         JSONObject obj = fotosJson.getJSONObject(i);
-                        fotos.add(new Photo(obj.getInt("photoId"), obj.getString("FileURL")));
+                        fotos.add(new Photo(obj.getInt("photoId"), obj.getString("fileUrl")));
                     }
                 }
             } catch (JSONException e) {
